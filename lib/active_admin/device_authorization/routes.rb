@@ -16,6 +16,7 @@ module ActiveAdmin
       # ActiveAdmin "Device Auth" page controller (`device_auth#...`).
       # consent: :controller routes them to the gem ConsentsController instead.
       def self.draw(mapper, config: ActiveAdmin::DeviceAuthorization.config, consent: :active_admin_page)
+        config.validate_rate_limits!
         oauth = config.oauth_path_prefix.to_s
         verification = config.verification_path.to_s
 
@@ -38,6 +39,9 @@ module ActiveAdmin
             to: "device_auth#deny",
             as: :deny_device_auth
         when :controller
+          mapper.get verification,
+            to: "/active_admin/device_authorization/consents#index",
+            as: :device_auth
           mapper.get "#{verification}/:user_code",
             to: "/active_admin/device_authorization/consents#show",
             as: :device_auth_grant

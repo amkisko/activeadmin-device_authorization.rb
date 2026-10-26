@@ -1,8 +1,27 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "action_controller"
+require_relative "../../../app/controllers/active_admin/device_authorization/application_controller"
+require_relative "../../../app/controllers/active_admin/device_authorization/consents_controller"
 
 RSpec.describe ActiveAdmin::DeviceAuthorization::Routes do
+  before do
+    ActiveAdmin::DeviceAuthorization.config.rate_limit_device_authorization = ->(_controller) { true }
+    ActiveAdmin::DeviceAuthorization.config.rate_limit_token = ->(_controller) { true }
+  end
+
+  [:rate_limit_device_authorization, :rate_limit_token].each do |setting|
+    [nil, false, "limiter"].each do |invalid|
+      it "refuses to mount OAuth routes when #{setting} is #{invalid.inspect}" do
+        ActiveAdmin::DeviceAuthorization.config.public_send("#{setting}=", invalid)
+        mapper = CaptureMapper.new
+        expect { described_class.draw(mapper) }.to raise_error(ArgumentError, /#{setting}/)
+        expect(mapper.posts).to be_empty
+      end
+    end
+  end
+
   class CaptureMapper
     attr_reader :posts, :gets
 
@@ -59,5 +78,19 @@ RSpec.describe ActiveAdmin::DeviceAuthorization::Routes do
       "/active_admin/device_authorization/consents#approve",
       "/active_admin/device_authorization/consents#deny"
     )
+  end
+
+  it "recognizes the controller verification URI and generates its named path" do
+    routes = ActionDispatch::Routing::RouteSet.new
+    routes.draw do
+      namespace :admin do
+        ActiveAdmin::DeviceAuthorization::Routes.draw(self, consent: :controller)
+      end
+    end
+
+    expect(routes.recognize_path("/admin/device_auth", method: :get)).to include(
+      controller: "active_admin/device_authorization/consents", action: "index"
+    )
+    expect(routes.url_helpers.admin_device_auth_path).to eq("/admin/device_auth")
   end
 end

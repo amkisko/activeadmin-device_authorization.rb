@@ -32,15 +32,19 @@ module ActiveAdmin
           status: :ok
         )
       rescue ActiveRecord::RecordNotFound
-        render_oauth_json({error: "invalid_client"}, status: :unauthorized)
-      rescue ArgumentError => error
+        render_oauth_json({error: "invalid_client"}, status: :bad_request)
+      rescue DeviceAuthorizationRequest::Error => error
         render_oauth_json({error: error.message}, status: :bad_request)
       end
 
       private
 
       def enforce_rate_limit
-        ActiveAdmin::DeviceAuthorization.config.rate_limit_device_authorization&.call(self)
+        limiter = ActiveAdmin::DeviceAuthorization.config.rate_limit_device_authorization
+        allowed = limiter.respond_to?(:call) && limiter.call(self) == true
+        return if performed? || allowed
+
+        render_oauth_json({error: "slow_down"}, status: :too_many_requests)
       end
     end
   end

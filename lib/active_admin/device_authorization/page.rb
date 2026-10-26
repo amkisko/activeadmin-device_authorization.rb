@@ -24,7 +24,7 @@ module ActiveAdmin
             helper_method :device_auth_grant
 
             define_method(:index) do
-              user_code = params[:user_code].to_s.strip.upcase
+              user_code = ActiveAdmin::DeviceAuthorization::UserCode.normalize(params[:user_code])
               if user_code.present?
                 redirect_to send(:"#{config.path_namespace}_device_auth_grant_path", user_code)
                 return
@@ -94,7 +94,8 @@ module ActiveAdmin
             private
 
             define_method(:load_grant!) do
-              @grant = config.grant_class.find_by!(user_code: params[:user_code].to_s.upcase)
+              user_code = ActiveAdmin::DeviceAuthorization::UserCode.normalize(params[:user_code])
+              @grant = config.grant_class.find_by!(user_code: user_code)
             end
           end
 

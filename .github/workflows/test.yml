@@ -6,17 +6,94 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
-  test:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1
+        uses: ruby/setup-ruby@e81a8fa391b11a595c1b7ed84177cc0fe02faf83 # v1
         with:
           ruby-version: "3.4"
           bundler-cache: true
 
+      - name: Run lint
+        run: make lint
+
+      - name: Run dependency audit
+        run: make audit
+
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - gemfile: rails72
+            ruby_version: "3.2"
+          - gemfile: rails8ruby34
+            ruby_version: "3.4"
+          - gemfile: rails8ruby4
+            ruby_version: "4.0"
+
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
+      RAILS_ENV: test
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@e81a8fa391b11a595c1b7ed84177cc0fe02faf83 # v1
+        with:
+          ruby-version: ${{ matrix.ruby_version }}
+          bundler-cache: true
+
       - name: Run tests
-        run: bundle exec rspec
+        run: bundle exec polyrun parallel-rspec --workers 5 --merge-failures
+
+  coverage:
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/rails8ruby34.gemfile
+      RAILS_ENV: test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - uses: ruby/setup-ruby@e81a8fa391b11a595c1b7ed84177cc0fe02faf83 # v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - run: POLYRUN_COVERAGE=1 bundle exec polyrun parallel-rspec --workers 5 --merge-failures
+      - name: Report coverage for Sonar/Codecov
+        run: >
+          bundle exec polyrun report-coverage
+          -i coverage/merged.json
+          -o coverage
+          --basename coverage
+          --format json,cobertura
+      - name: Merge RSpec JSON into JUnit
+        run: |
+          mkdir -p coverage
+          bundle exec polyrun report-junit -i "tmp/rspec-*.json" -o coverage/junit-coverage.xml
+      - uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+        continue-on-error: true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7
+        continue-on-error: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          report_type: test_results
+          files: coverage/junit-coverage.xml

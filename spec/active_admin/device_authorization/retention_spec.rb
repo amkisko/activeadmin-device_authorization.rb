@@ -67,7 +67,6 @@ RSpec.describe ActiveAdmin::DeviceAuthorization::Retention do
     end
   end
 
-
   it "deletes by absolute and revoked when idle expiry is off" do
     tokens = TokenRelationSpy.new
     grants = GrantRelationSpy.new

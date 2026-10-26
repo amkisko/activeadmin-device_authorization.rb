@@ -17,6 +17,7 @@ module ActiveAdmin
 
       def render_oauth_json(payload, status:)
         response.set_header("Cache-Control", "no-store")
+        response.set_header("Pragma", "no-cache")
         render json: payload, status: status
       end
     end

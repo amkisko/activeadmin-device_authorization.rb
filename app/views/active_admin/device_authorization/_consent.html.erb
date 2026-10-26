@@ -3,9 +3,10 @@
 <% default_scopes = Array(config.default_scopes).map(&:to_s) & available_scopes %>
 <% absolute_ttl_choices = Array(config.access_token_absolute_ttl_choices) %>
 <% client = grant.public_send(config.client_class_name.underscore) %>
+<% heading_level = local_assigns.fetch(:heading_level, :h3) %>
 
 <div class="panel">
-  <h3 class="panel-title"><%= t("active_admin.device_authorization.title") %></h3>
+  <%= content_tag heading_level, t("active_admin.device_authorization.title"), class: "panel-title" %>
   <div class="panel-body">
     <p><%= t("active_admin.device_authorization.intro") %></p>
   </div>
@@ -29,6 +30,8 @@
     </tbody>
   </table>
 </div>
+
+<p><strong><%= t("active_admin.device_authorization.verify_code") %></strong></p>
 
 <% if config.idle_expiry_enabled? %>
   <p><%= t("active_admin.device_authorization.idle_note", idle_hours: (config.access_token_idle_ttl.to_i / 3600.0).round(1)) %></p>

@@ -8,6 +8,10 @@ module ActiveAdmin
           root.join("config/locales/*.{rb,yml}")
         ]
       end
+
+      initializer "active_admin.device_authorization.filter_parameters" do |app|
+        app.config.filter_parameters |= [:device_code, :user_code, :access_token]
+      end
     end
   end
 end

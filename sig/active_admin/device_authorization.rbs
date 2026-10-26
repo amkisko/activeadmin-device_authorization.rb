@@ -1,0 +1,5 @@
+module ActiveAdmin
+  module DeviceAuthorization
+    VERSION: String
+  end
+end

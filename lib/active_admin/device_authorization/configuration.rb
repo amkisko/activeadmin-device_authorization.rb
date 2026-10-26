@@ -151,6 +151,12 @@ module ActiveAdmin
         Array(requested).flatten.compact.map(&:to_s).map(&:strip).uniq.select { |scope| allowed.include?(scope) }
       end
 
+      def validate_rate_limits!
+        [:rate_limit_device_authorization, :rate_limit_token].each do |setting|
+          raise ArgumentError, "#{setting} must be callable" unless public_send(setting).respond_to?(:call)
+        end
+      end
+
       # Hard ceiling is access_token_absolute_ttl. Consent max cannot exceed it.
       def effective_max_absolute_ttl
         return nil unless absolute_expiry_enabled?
@@ -212,7 +218,7 @@ module ActiveAdmin
         end
         Array(access_token_absolute_ttl_choices).each do |choice|
           seconds = choice.to_i
-          next if seconds >= min && seconds <= max
+          next if seconds.between?(min, max)
 
           raise ArgumentError,
             "access_token_absolute_ttl_choices entry #{seconds} must be within min..max (#{min}..#{max})"

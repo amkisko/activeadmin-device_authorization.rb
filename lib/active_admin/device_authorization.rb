@@ -8,6 +8,7 @@ require "active_support/core_ext/numeric/time"
 
 require_relative "device_authorization/version"
 require_relative "device_authorization/configuration"
+require_relative "device_authorization/callback"
 require_relative "device_authorization/user_code"
 require_relative "device_authorization/access_token_expiry"
 require_relative "device_authorization/device_authorization_request"

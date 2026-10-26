@@ -3,14 +3,27 @@
 module ActiveAdmin
   module DeviceAuthorization
     # Thin HTML consent actions when the host does not use the ActiveAdmin page.
-    # Prefer ActiveAdmin::DeviceAuthorization.register_page! for the AA layout.
+    # Prefer ActiveAdmin::DeviceAuthorization::Page.register! for the AA layout.
     class ConsentsController < ApplicationController
       before_action :authenticate_resource_owner!
-      before_action :load_grant!
+      before_action :load_grant!, except: :index
+
+      def index
+        user_code = UserCode.normalize(params[:user_code])
+        if user_code.present?
+          redirect_to send(
+            :"#{ActiveAdmin::DeviceAuthorization.config.path_namespace}_device_auth_grant_path",
+            user_code
+          )
+          return
+        end
+
+        render layout: false
+      end
 
       def show
         @grant.mark_expired_if_needed!
-        render template: "active_admin/device_authorization/consent", layout: false
+        render layout: false
       end
 
       def approve
@@ -58,7 +71,7 @@ module ActiveAdmin
 
       def load_grant!
         @grant = ActiveAdmin::DeviceAuthorization.config.grant_class
-          .find_by!(user_code: params[:user_code].to_s.upcase)
+          .find_by!(user_code: UserCode.normalize(params[:user_code]))
       end
 
       def after_consent_path

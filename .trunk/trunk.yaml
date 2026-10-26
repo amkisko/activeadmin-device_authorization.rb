@@ -1,0 +1,71 @@
+# This file controls the behavior of Trunk: https://docs.trunk.io/cli
+# To learn more about the format of this file, see https://docs.trunk.io/reference/trunk-yaml
+version: 0.1
+cli:
+  version: 1.25.0
+# Trunk provides extensibility via plugins. (https://docs.trunk.io/plugins)
+plugins:
+  sources:
+    - id: trunk
+      ref: v1.7.4
+      uri: https://github.com/trunk-io/plugins
+runtimes:
+  enabled:
+    - go@1.21.0
+    - node@22.16.0
+    - python@3.10.8
+    - ruby@>=3.3.0
+lint:
+  disabled:
+    - brakeman
+    - rufo
+    - eslint
+    - prettier
+    - standardrb
+    - semgrep
+    - oxipng
+    - svgo
+    - trufflehog
+    - shfmt
+    - hadolint
+    - trivy
+    - osv-scanner
+    - biome
+    - stylelint
+  definitions:
+    - name: rubocop
+      extra_packages:
+        - standard@1.52.0
+        - standard-custom@1.0.2
+        - standard-performance@1.8.0
+        - standard-rspec@0.3.1
+        - rubocop-rspec@3.8.0
+        - rubocop-thread_safety@0.7.3
+  ignore:
+    - linters: [ALL]
+      paths:
+        - bin/**
+        - db/schema.rb
+        - vendor/**
+        - tmp/**
+        - log/**
+        - storage/**
+        - coverage/**
+        - uploads/**
+  enabled:
+    - rubocop@1.81.7
+    - yamllint@1.37.1
+    - gitleaks@8.29.0
+    - actionlint@1.7.8
+    - checkov@3.2.495
+    - dotenv-linter@4.0.0
+    - git-diff-check
+    - markdownlint@0.46.0
+    - shellcheck@0.11.0
+actions:
+  disabled:
+    - trunk-announce
+    - trunk-check-pre-push
+    - trunk-fmt-pre-commit
+  enabled:
+    - trunk-upgrade-available

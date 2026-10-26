@@ -7,6 +7,7 @@ fi:
       enter_code_hint: Syötä asiakkaan näyttämä koodi ja tarkista sen pyytämät oikeudet.
       continue: Jatka
       intro: Asiakas pyysi lyhytikäistä admin-tunnusta. Tarkista asiakas, oikeudet ja voimassaolo ennen hyväksyntää.
+      verify_code: Varmista, että tämä koodi vastaa käyttämäsi laitteen näyttämää koodia. Hylkää pyyntö, jos koodit eivät täsmää.
       client: Asiakas
       user_code: Käyttäjäkoodi
       status: Tila

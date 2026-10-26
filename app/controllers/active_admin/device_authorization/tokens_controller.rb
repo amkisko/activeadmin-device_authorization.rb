@@ -28,7 +28,11 @@ module ActiveAdmin
       private
 
       def enforce_rate_limit
-        ActiveAdmin::DeviceAuthorization.config.rate_limit_token&.call(self)
+        limiter = ActiveAdmin::DeviceAuthorization.config.rate_limit_token
+        allowed = limiter.respond_to?(:call) && limiter.call(self) == true
+        return if performed? || allowed
+
+        render_oauth_json({error: "slow_down"}, status: :too_many_requests)
       end
     end
   end

@@ -7,6 +7,7 @@ en:
       enter_code_hint: Enter the code shown by the client to review its requested access.
       continue: Continue
       intro: A client asked for a short-lived admin access token. Review the client, scopes, and lifetime before approving.
+      verify_code: Verify that this code matches the code shown on the device you are using. Deny the request if the codes do not match.
       client: Client
       user_code: User code
       status: Status

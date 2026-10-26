@@ -1,0 +1,184 @@
+inherit_mode:
+  merge:
+    - Exclude
+
+require:
+  - standard
+
+plugins:
+  - standard-custom
+  - standard-performance
+  - rubocop-performance
+  - rubocop-rspec
+  - rubocop-thread_safety
+
+inherit_gem:
+  standard: config/base.yml
+  standard-performance: config/base.yml
+  standard-custom: config/base.yml
+
+AllCops:
+  SuggestExtensions: false
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  Exclude:
+    - gemfiles/**/*
+    - bin/**/*
+    - db/**/*
+    - vendor/**/*
+    - tmp/**/*
+    - log/**/*
+    - storage/**/*
+    - coverage/**/*
+    - uploads/**/*
+    - .git/**/*
+    - node_modules/**/*
+    - public/packs/**/*
+    - public/packs-test/**/*
+    - usr/**/*
+
+RSpec/ExampleLength:
+  Max: 80
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+  Exclude:
+    - spec/**/*
+
+RSpec/HooksBeforeExamples:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 16
+
+RSpec/NestedGroups:
+  Max: 4
+
+RSpec/RepeatedExample:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Enabled: false
+
+RSpec/DescribedClass:
+  Enabled: false
+
+RSpec/InstanceVariable:
+  Enabled: false
+
+RSpec/LeakyLocalVariable:
+  Enabled: false
+
+RSpec/VerifiedDoubles:
+  Enabled: false
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/NoExpectationExample:
+  Enabled: false
+
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/MultipleDescribes:
+  Enabled: false
+
+RSpec/RepeatedExampleGroupDescription:
+  Enabled: false
+
+RSpec/RepeatedDescription:
+  Enabled: false
+
+RSpec/StubbedMock:
+  Enabled: false
+
+RSpec/ExpectActual:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+Style/AccessModifierDeclarations:
+  EnforcedStyle: inline
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Lint/UselessAssignment:
+  Enabled: false
+
+ThreadSafety/ClassAndModuleAttributes:
+  Enabled: false
+
+ThreadSafety/ClassInstanceVariable:
+  Enabled: false
+
+ThreadSafety/DirChdir:
+  Exclude:
+    - "*.gemspec"
+
+Lint/Debugger:
+  Enabled: true
+  Exclude: []
+
+RSpec/Focus:
+  Enabled: true
+  Exclude: []
+
+RSpec/LeakyConstantDeclaration:
+  Exclude:
+    - spec/**/*
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - spec/**/*
+
+Metrics/ClassLength:
+  Enabled: true
+  CountAsOne: [array, hash, heredoc, method_call]
+  Max: 150
+  Exclude:
+    - lib/active_admin/device_authorization/configuration.rb
+
+Metrics/ModuleLength:
+  Enabled: true
+  CountAsOne: [array, hash, heredoc, method_call]
+  Max: 150
+
+Metrics/AbcSize:
+  Enabled: true
+  Max: 15
+  CountRepeatedAttributes: false
+  Exclude:
+    - app/controllers/active_admin/device_authorization/consents_controller.rb
+    - app/controllers/active_admin/device_authorization/device_authorizations_controller.rb
+    - lib/active_admin/device_authorization/access_token_expiry.rb
+    - lib/active_admin/device_authorization/configuration.rb
+    - lib/active_admin/device_authorization/consent.rb
+    - lib/active_admin/device_authorization/device_authorization_request.rb
+    - lib/active_admin/device_authorization/page.rb
+    - lib/active_admin/device_authorization/retention.rb
+    - lib/active_admin/device_authorization/routes.rb
+    - lib/active_admin/device_authorization/token_exchange.rb
+    - lib/active_admin/device_authorization/user_code.rb
+    - spec/**/*
+
+Metrics/CyclomaticComplexity:
+  Enabled: true
+  Max: 10
+  Exclude:
+    - lib/active_admin/device_authorization/configuration.rb
+    - lib/active_admin/device_authorization/page.rb
+    - lib/active_admin/device_authorization/token_exchange.rb
+
+Metrics/PerceivedComplexity:
+  Enabled: true
+  Max: 10
+  Exclude:
+    - lib/active_admin/device_authorization/configuration.rb
+    - lib/active_admin/device_authorization/page.rb
+    - lib/active_admin/device_authorization/token_exchange.rb

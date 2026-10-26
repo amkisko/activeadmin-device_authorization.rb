@@ -32,7 +32,7 @@ module ActiveAdmin
           attrs[:absolute_ttl_seconds] = @absolute_ttl_seconds if @grant.respond_to?(:absolute_ttl_seconds=)
           @grant.update!(attrs)
         end
-        @config.on_consent_approved&.call(resource_owner: @resource_owner, grant: @grant)
+        Callback.call(@config.on_consent_approved, resource_owner: @resource_owner, grant: @grant)
         @grant
       end
 
@@ -46,7 +46,7 @@ module ActiveAdmin
           attrs[resource_owner_association] = @resource_owner
           @grant.update!(attrs)
         end
-        @config.on_consent_denied&.call(resource_owner: @resource_owner, grant: @grant)
+        Callback.call(@config.on_consent_denied, resource_owner: @resource_owner, grant: @grant)
         @grant
       end
 

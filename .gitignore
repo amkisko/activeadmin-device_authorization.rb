@@ -16,6 +16,7 @@
 /coverage/
 /.rspec_status
 /spec/examples.txt
+/spec/spec_paths.txt
 .rspec_failures
 
 # Gem test app (see spec/dummy)
@@ -45,5 +46,16 @@ Thumbs.db
 # Build artifacts
 *.gem
 /pkg/
+
+# Trunk (generated; config lives in .trunk/)
+.trunk/out
+.trunk/logs
+.trunk/actions
+.trunk/notifications
+.trunk/tools
+.trunk/plugins
+.trunk/user_trunk.yaml
+.trunk/user.yaml
+.trunk/tmp
 
 .pray

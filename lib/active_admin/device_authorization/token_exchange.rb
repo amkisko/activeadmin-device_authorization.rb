@@ -24,12 +24,12 @@ module ActiveAdmin
 
       def call
         client = @config.client_class.enabled.find_by(client_id: @client_id)
-        raise Error.new("invalid_client", http_status: 401) unless client
+        raise Error.new("invalid_client") unless client
 
         result = @config.grant_class.transaction do
           grant = @config.grant_class.lock.find_by(
             client_association => client,
-            device_code_digest: @config.digest(@device_code)
+            :device_code_digest => @config.digest(@device_code)
           )
           raise Error.new("invalid_grant") unless grant
 
@@ -51,7 +51,12 @@ module ActiveAdmin
         end
         raise result if result.is_a?(Error)
 
-        result
+        Callback.call(
+          @config.on_token_issued,
+          resource_owner: result.fetch(:token).public_send(resource_owner_association),
+          token: result.fetch(:token)
+        )
+        result.fetch(:payload)
       end
 
       private
@@ -86,13 +91,11 @@ module ActiveAdmin
           client_association => client,
           resource_owner_association => grant.public_send(resource_owner_association),
           grant_association => grant,
-          token_digest: @config.digest(plaintext),
-          scopes: grant.granted_scopes,
-          absolute_expires_at: absolute_expires_at,
-          last_used_at: now
+          :token_digest => @config.digest(plaintext),
+          :scopes => grant.granted_scopes,
+          :absolute_expires_at => absolute_expires_at,
+          :last_used_at => now
         )
-        @config.on_token_issued&.call(resource_owner: token.public_send(resource_owner_association), token: token)
-
         payload = {
           access_token: plaintext,
           token_type: "Bearer",
@@ -104,7 +107,7 @@ module ActiveAdmin
           now: now
         )
         payload[:expires_in] = expires_in unless expires_in.nil?
-        payload
+        {payload: payload, token: token}
       end
 
       def grant_association

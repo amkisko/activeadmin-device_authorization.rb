@@ -3,6 +3,8 @@
 module ActiveAdmin
   module DeviceAuthorization
     class DeviceAuthorizationRequest
+      class Error < StandardError; end
+
       Result = Data.define(
         :device_code,
         :user_code,
@@ -14,6 +16,7 @@ module ActiveAdmin
 
       def initialize(client_id:, scopes:, verification_base_url:, config: ActiveAdmin::DeviceAuthorization.config)
         @client_id = client_id
+        @requested_scopes = Array(scopes).flatten.compact.map(&:to_s).map(&:strip).reject(&:empty?).uniq
         @scopes = config.normalize_scopes(scopes)
         @verification_base_url = verification_base_url
         @config = config
@@ -21,8 +24,9 @@ module ActiveAdmin
 
       def call
         client = @config.client_class.enabled.find_by!(client_id: @client_id)
-        raise ArgumentError, "invalid_scope" if @scopes.empty?
-        raise ArgumentError, "unsupported_scope" unless client.allows_scopes?(@scopes)
+        raise Error, "invalid_scope" if @scopes.empty?
+        raise Error, "invalid_scope" unless (@requested_scopes - @scopes).empty?
+        raise Error, "invalid_scope" unless client.allows_scopes?(@scopes)
 
         device_code = SecureRandom.urlsafe_base64(32)
         user_code = UserCode.generate(
@@ -32,11 +36,11 @@ module ActiveAdmin
 
         @config.grant_class.create!(
           client_association_name => client,
-          device_code_digest: @config.digest(device_code),
-          user_code: user_code,
-          requested_scopes: @scopes,
-          status: "pending",
-          challenge_expires_at: Time.current + @config.challenge_expires_in.to_i
+          :device_code_digest => @config.digest(device_code),
+          :user_code => user_code,
+          :requested_scopes => @scopes,
+          :status => "pending",
+          :challenge_expires_at => Time.current + @config.challenge_expires_in.to_i
         )
 
         verification_uri = build_verification_uri

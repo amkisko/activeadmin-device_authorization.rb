@@ -9,7 +9,7 @@ This gem is unpublished (`allowed_push_host` empty) while the repository is priv
 ## Requirements
 
 - Ruby 3.2+
-- Rails 7.1+
+- Rails 7.2.3.2+
 - ActiveAdmin 3.2+
 
 ## Install
@@ -32,7 +32,7 @@ gem "activeadmin-device_authorization", github: "amkisko/activeadmin-device_auth
 - `grant_retention_period` / `token_retention_period`: Bounded cleanup of unused challenges and expired or revoked tokens.
 - Model class names: host keeps its own ActiveRecord models; the gem drives protocol against them.
 - Scope lists, labels, and audit callbacks: product-specific; stay in the host.
-- Rate-limit procs: host wires abuse limits; the gem does not own a limiter.
+- Rate-limit procs: host wires abuse limits; both are required before routes can be drawn.
 
 ## Setup
 
@@ -61,8 +61,15 @@ ActiveAdmin::DeviceAuthorization.configure do |config|
 
   config.on_consent_approved = ->(resource_owner:, grant:) { }
   config.on_token_issued = ->(resource_owner:, token:) { }
-  config.rate_limit_device_authorization = ->(controller) { }
-  config.rate_limit_token = ->(controller) { }
+
+  # These host methods must return exactly true to admit the request. They may
+  # render their own response and return anything else to stop processing.
+  config.rate_limit_device_authorization = lambda { |controller|
+    DeviceAuthorizationRateLimits.allow_challenge?(controller.request)
+  }
+  config.rate_limit_token = lambda { |controller|
+    DeviceAuthorizationRateLimits.allow_poll?(controller.request)
+  }
 end
 ```
 
@@ -70,16 +77,20 @@ end
 # config/routes.rb (inside the admin namespace)
 namespace :admin do
   ActiveAdmin::DeviceAuthorization::Routes.draw(self)
-  # Optional: Routes.draw(self, consent: :controller) for the gem ConsentsController
-  # instead of ActiveAdmin page actions (device_auth#show/approve/deny).
+  # Optional: Routes.draw(self, consent: :controller) serves the code-entry and
+  # consent pages from the gem instead of ActiveAdmin page actions.
 end
 ```
 
 OAuth controller paths are absolute (`/active_admin/device_authorization/...`) so nesting under `namespace :admin` does not invent `Admin::ActiveAdmin::...` constants. Consent defaults to the ActiveAdmin page (`device_auth#...`).
 
+Set `verification_base_url` to the host's trusted HTTPS origin in production. When it is unset, verification links use `request.base_url`, so the host must enforce HTTPS and reject untrusted `Host` headers.
+
 `access_token_absolute_ttl` is the hard ceiling. Consent `min` / `max` / `default` / `choices` must sit inside that ceiling; `clamp_absolute_ttl` uses `min(access_token_max_absolute_ttl, access_token_absolute_ttl)`.
 
-Token retention deletes rows past `token_retention_period` after absolute expiry, revoke, or idle expiry (when idle TTL is enabled). Do not rely on absolute expiry alone when absolute TTL is nil (far-future sentinel).
+Token retention deletes rows past `token_retention_period` after absolute expiry, revoke, or idle expiry (when idle TTL is enabled). Do not rely on absolute expiry alone when absolute TTL is nil (far-future sentinel). Schedule `bundle exec rake active_admin:device_authorization:retention` in the host application at the cadence required by its retention policy.
+
+Consent and token callbacks run after their database commit. A callback exception is reported through `Rails.error` and does not hide the committed decision or issued token from the caller. Use a durable host-side job or outbox when delivery must be retried.
 
 RFC 8628 `slow_down` raises the required poll interval by `slow_down_increment` when the grant stores `poll_interval_seconds`. Without that column, the server still returns `slow_down` against the base `poll_interval` only.
 
@@ -89,6 +100,13 @@ RFC 8628 `slow_down` raises the required poll interval by `slow_down_increment` 
 - Grant: `create!`, `exists?(user_code:)`, `lock.find_by(...)`, `pending?`, `mark_expired_if_needed!`, `requested_scopes` / `granted_scopes`, `last_poll_at`, optional `absolute_ttl_seconds`, optional `poll_interval_seconds` (raised after each `slow_down`), `has_one` access token
 - Access token: `create!` with digest, scopes, `absolute_expires_at`, `last_used_at`; optional `revoked_at`
 - Associations named from configured class names (`DeviceAuthorizationClient` -> `device_authorization_client`, and so on)
+- Grant states `pending`, `approved`, `denied`, and `expired`; only `pending` may transition to a terminal state, and an approved grant may have at most one access token
+- Unique indexes for client IDs, user codes, token digests, each client/device-code-digest pair, and the access token's grant foreign key; foreign keys for the grant, client, and resource owner associations
+- Indexes that support expiry, revoke, idle-use, and challenge-retention queries
+
+### Bearer validation contract
+
+The gem issues and expires tokens, but it does not install authentication in the host API. For every protected request, the host must digest the presented bearer value with `ActiveAdmin::DeviceAuthorization.config.digest`, find the matching token through the allowed client or resource-owner relation, reject it when `AccessTokenExpiry#expired?` is true, enforce its scopes, and update `last_used_at` only after successful authentication. A missing, revoked, expired, or out-of-scope token must fail closed.
 
 Register the ActiveAdmin page after configuration:
 
@@ -107,8 +125,14 @@ ActiveAdmin::DeviceAuthorization::Page.register!
 
 ```bash
 bundle install
-bundle exec rspec
+bundle exec appraisal install
+make lint
+make test
 ```
+
+Matrixed Rails versions use [Appraisal](https://github.com/thoughtbot/appraisal): `gemfiles/rails72.gemfile`, `rails8ruby34.gemfile`, and `rails8ruby4.gemfile`. Run `bundle exec appraisal rspec` to execute RSpec in each gemfile context.
+
+[Trunk](https://docs.trunk.io) config lives in `.trunk/`; CI can run `trunk` via `.github/workflows/_trunk_check.yml`. Releases: `make release` or `usr/bin/release.rb`.
 
 ## Contributing
 

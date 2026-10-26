@@ -2,6 +2,19 @@
 
 require "active_admin/device_authorization"
 
+unless defined?(Rails)
+  module Rails
+    class << self
+      attr_accessor :error
+    end
+  end
+end
+
+Rails.error ||= Class.new do
+  def report(*)
+  end
+end.new
+
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
