@@ -2,26 +2,22 @@
 
 ## Unreleased
 
-### Fixed
+## 0.1.3 (2026-10-26)
 
-- Raise the Rails minimum to 7.2.3.2 so every supported dependency graph includes current Rails security fixes
-- Require host rate limits before mounting the public OAuth endpoints, and fail closed when a limiter does not explicitly allow a request
-- Reject unknown and client-disallowed scopes instead of silently narrowing the request
-- Return protocol-correct errors and cache-prevention headers from the OAuth endpoints
-- Protect standalone consent decisions from cross-site request forgery
-- Filter device codes, user codes, and access-token parameters from Rails request logs
-- Serve both standalone code-entry and consent pages, normalize entered user codes, and prompt the administrator to compare the device code
-- Run consent and token callbacks after commit without letting callback failures hide committed results
-- Make dependency audits fail when the scanner fails or finds an advisory
-- Draw absolute controller paths so nesting under `namespace :admin` does not prefix `Admin::` onto gem controllers
-- Clamp consent absolute TTL against `access_token_absolute_ttl`, and validate default/min/max/choices as one window
-- Delete idle-expired tokens in retention (so a far-future absolute sentinel cannot keep them for decades)
-- Raise the required poll interval by `slow_down_increment` when the grant stores `poll_interval_seconds`
-
-### Added
-
+- Add RFC 8628 device authorization with ActiveAdmin consent, token exchange, and retention helpers
+- Add English, Finnish, and Swedish strings for the consent and code-entry UI
 - Add a schedulable retention task for expired authorization records
-- Test the minimum supported Ruby, Rails, and ActiveAdmin versions in CI
-- Initial local gem scaffold: configurable RFC 8628 device authorization, consent, token exchange, retention, and ActiveAdmin consent page helpers
-- English, Finnish, and Swedish locale strings for the consent and code-entry UI
-- Specs for routes, retention axes, and consecutive `slow_down` poll gating
+- Require Rails 7.2.3.2 or newer
+- Require host rate limits before mounting the public OAuth endpoints and fail closed unless a limiter returns true
+- Reject unknown and client-disallowed scopes with `invalid_scope`
+- Return protocol-correct OAuth errors and cache-prevention headers
+- Protect standalone consent decisions from cross-site request forgery
+- Filter `device_code`, `user_code`, and `access_token` from Rails request logs
+- Serve standalone code-entry and consent pages, normalize entered user codes, and prompt code comparison with the device
+- Run consent and token callbacks after commit without hiding committed results when a callback fails
+- Draw absolute controller paths so nesting under `namespace :admin` does not prefix `Admin::` onto gem controllers
+- Clamp consent absolute TTL against `access_token_absolute_ttl`
+- Delete idle-expired tokens during retention
+- Raise the required poll interval by `slow_down_increment` when the grant stores `poll_interval_seconds`
+- Document public install from RubyGems or git, host rate-limit / HTTPS / Host / retention duties, and `make release`
+- Improve standalone consent markup for narrow screens, contrast on the code-comparison prompt, and readable user codes

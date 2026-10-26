@@ -4,6 +4,27 @@
 <% absolute_ttl_choices = Array(config.access_token_absolute_ttl_choices) %>
 <% client = grant.public_send(config.client_class_name.underscore) %>
 <% heading_level = local_assigns.fetch(:heading_level, :h3) %>
+<style>
+  .device-auth-user-code {
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    font-size: 1.1em;
+    letter-spacing: 0.08em;
+  }
+  .device-auth-actions ol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  @media (min-width: 40rem) {
+    .device-auth-actions ol {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+</style>
 
 <div class="panel">
   <%= content_tag heading_level, t("active_admin.device_authorization.title"), class: "panel-title" %>
@@ -12,68 +33,79 @@
   </div>
 </div>
 
-<div class="attributes-table">
-  <table>
-    <tbody>
-      <tr>
-        <th><%= t("active_admin.device_authorization.client") %></th>
-        <td><%= client.name %></td>
-      </tr>
-      <tr>
-        <th><%= t("active_admin.device_authorization.user_code") %></th>
-        <td><%= grant.user_code %></td>
-      </tr>
-      <tr>
-        <th><%= t("active_admin.device_authorization.status") %></th>
-        <td><%= grant.status %></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<div class="panel">
+  <div class="panel-body">
+    <table class="attributes_table">
+      <tbody>
+        <tr>
+          <th scope="row"><%= t("active_admin.device_authorization.client") %></th>
+          <td><%= client.name %></td>
+        </tr>
+        <tr>
+          <th scope="row"><%= t("active_admin.device_authorization.user_code") %></th>
+          <td><code class="device-auth-user-code"><%= grant.user_code %></code></td>
+        </tr>
+        <tr>
+          <th scope="row"><%= t("active_admin.device_authorization.status") %></th>
+          <td><%= grant.status %></td>
+        </tr>
+      </tbody>
+    </table>
 
-<p><strong><%= t("active_admin.device_authorization.verify_code") %></strong></p>
-
-<% if config.idle_expiry_enabled? %>
-  <p><%= t("active_admin.device_authorization.idle_note", idle_hours: (config.access_token_idle_ttl.to_i / 3600.0).round(1)) %></p>
-<% end %>
-
-<% if grant.pending? %>
-  <%= form_with url: send(:"#{config.path_namespace}_approve_device_auth_path", grant.user_code), method: :post, id: "device-auth-approve", data: {turbo: false}, class: "formtastic" do %>
-    <% if available_scopes.any? %>
-      <fieldset class="inputs">
-        <legend class="fieldset-title"><%= t("active_admin.device_authorization.scopes") %></legend>
-        <p class="inline-hints"><%= t("active_admin.device_authorization.scopes_hint") %></p>
-        <% available_scopes.each do |scope| %>
-          <% field_id = "scope_#{scope.tr(":", "_")}" %>
-          <div class="choice">
-            <label for="<%= field_id %>">
-              <%= check_box_tag "scopes[]", scope, default_scopes.include?(scope), id: field_id %>
-              <%= config.label_for_scope(scope) %>
-            </label>
-          </div>
-        <% end %>
-      </fieldset>
-    <% end %>
-    <% if config.absolute_expiry_enabled? && absolute_ttl_choices.any? %>
-      <div class="input">
-        <label class="label" for="absolute_ttl_seconds"><%= t("active_admin.device_authorization.absolute_ttl") %></label>
-        <%= select_tag :absolute_ttl_seconds,
-          options_for_select(
-            absolute_ttl_choices.map { |seconds| ["#{seconds.to_i / 3600} h", seconds.to_i] },
-            config.access_token_default_absolute_ttl.to_i
-          ),
-          id: "absolute_ttl_seconds" %>
-      </div>
-    <% end %>
-  <% end %>
-  <div class="flex flex-wrap items-center gap-3">
-    <div class="formtastic">
-      <%= submit_tag t("active_admin.device_authorization.approve"), form: "device-auth-approve" %>
+    <div class="flash flash_alert" role="status">
+      <%= t("active_admin.device_authorization.verify_code") %>
     </div>
-    <%= form_with url: send(:"#{config.path_namespace}_deny_device_auth_path", grant.user_code), method: :post, data: {turbo: false} do %>
-      <%= submit_tag t("active_admin.device_authorization.deny"), class: "action-item-button" %>
+
+    <% if config.idle_expiry_enabled? %>
+      <p class="inline-hints"><%= t("active_admin.device_authorization.idle_note", idle_hours: (config.access_token_idle_ttl.to_i / 3600.0).round(1)) %></p>
+    <% end %>
+
+    <% if grant.pending? %>
+      <%= form_with url: send(:"#{config.path_namespace}_approve_device_auth_path", grant.user_code), method: :post, id: "device-auth-approve", data: {turbo: false}, class: "formtastic" do %>
+        <% if available_scopes.any? %>
+          <fieldset class="inputs">
+            <legend><%= t("active_admin.device_authorization.scopes") %></legend>
+            <p class="inline-hints"><%= t("active_admin.device_authorization.scopes_hint") %></p>
+            <% available_scopes.each do |scope| %>
+              <% field_id = "scope_#{scope.tr(":", "_")}" %>
+              <li class="choice">
+                <label for="<%= field_id %>">
+                  <%= check_box_tag "scopes[]", scope, default_scopes.include?(scope), id: field_id %>
+                  <%= config.label_for_scope(scope) %>
+                </label>
+              </li>
+            <% end %>
+          </fieldset>
+        <% end %>
+        <% if config.absolute_expiry_enabled? && absolute_ttl_choices.any? %>
+          <fieldset class="inputs">
+            <div class="input select">
+              <label class="label" for="absolute_ttl_seconds"><%= t("active_admin.device_authorization.absolute_ttl") %></label>
+              <%= select_tag :absolute_ttl_seconds,
+                options_for_select(
+                  absolute_ttl_choices.map { |seconds| ["#{seconds.to_i / 3600} h", seconds.to_i] },
+                  config.access_token_default_absolute_ttl.to_i
+                ),
+                id: "absolute_ttl_seconds" %>
+            </div>
+          </fieldset>
+        <% end %>
+      <% end %>
+
+      <fieldset class="actions device-auth-actions">
+        <ol>
+          <li class="action input_action">
+            <%= submit_tag t("active_admin.device_authorization.approve"), form: "device-auth-approve" %>
+          </li>
+          <li class="action input_action">
+            <%= form_with url: send(:"#{config.path_namespace}_deny_device_auth_path", grant.user_code), method: :post, data: {turbo: false} do %>
+              <%= submit_tag t("active_admin.device_authorization.deny") %>
+            <% end %>
+          </li>
+        </ol>
+      </fieldset>
+    <% else %>
+      <p><%= t("active_admin.device_authorization.not_actionable", status: grant.status) %></p>
     <% end %>
   </div>
-<% else %>
-  <p><%= t("active_admin.device_authorization.not_actionable", status: grant.status) %></p>
-<% end %>
+</div>

@@ -17,10 +17,13 @@
 - The token-issued callback runs after commit. Callback failures no longer prevent delivery of a committed result.
 - Expired grants and tokens can be removed with `active_admin:device_authorization:retention`.
 - Dependency audit failures now fail the local audit command.
+- Standalone consent pages ship document markup, a high-contrast code-comparison alert, monospace user codes, and stacked approve/deny actions under 40rem.
+- README lists RubyGems and git install paths, `make release`, and a Host responsibilities section for rate limits, HTTPS/Host, retention, models, and bearer checks.
+- Gemspec `allowed_push_host` is `https://rubygems.org` so `make release` can push.
 
 ## Next
 
-- Validate the standalone consent page CSS, contrast, and narrow layout in a host ActiveAdmin application.
+- Spot-check the ActiveAdmin page theme (focus ring color, button contrast) inside a real host admin skin; standalone controller mode now ships its own narrow-layout styles.
 - Configure production rate-limit policies and schedule the retention task in each host.
 
 ## Source

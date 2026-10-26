@@ -29,13 +29,14 @@ The host owns bearer authentication and database schema. `README.md` now makes e
 - `make audit` found no advisories in `Gemfile.lock` or any of the three supported appraisal locks after ruby-advisory-db was updated to commit `03da937a9e171e3fedebde6620e203559b7a60c0`.
 - The built gem is 23,552 bytes. Executable and packaged source under `app`, `config`, `lib`, and `sig` totals 47,431 bytes. The package contains the controllers, standalone views, locales, callback handling, bounded code generation, retention task, and type signature.
 - The controller-mode HTML has one top-level heading, labelled code input, keyboard-operable forms, explicit approve and deny actions, and an adjacent code-comparison warning.
+- A later pass replaced Tailwind utility action rows with formtastic action lists, wrapped standalone pages in document markup with narrow-layout styles, raised contrast on the comparison prompt via `flash flash_alert`, and marked user codes as monospace. Visual assessment (source-level): one composition per page, labelled controls, stacked actions on narrow viewports, visible focus outlines in standalone mode. Live ActiveAdmin host theme colors and screenshots remain for a human.
 
 No confirmed high- or medium-severity repository finding remains open after the final pass.
 
 ## Next
 
-- Validate ActiveAdmin host CSS, focus indication, contrast, error notices, and narrow-screen layout in a running host application. Source-level HTML was assessed, but no host application or screenshot was available.
-- Configure and load-test each host's rate-limit policies, trusted HTTPS verification origin, model constraints, bearer middleware, and retention schedule before deployment.
+- Spot-check the ActiveAdmin page theme in a real host admin skin. Standalone consent mode now uses document markup, a comparison alert, monospace user codes, stacked actions under 40rem, and visible focus outlines. Host theme colors for the ActiveAdmin page path still need a live screenshot.
+- Configure and load-test each host's rate-limit policies, trusted HTTPS verification origin, model constraints, bearer middleware, and retention schedule before deployment. README now groups these under Host responsibilities.
 - Treat callback reporting as best effort. Use a durable host outbox when an audit event must be delivered exactly once or retried.
 
 ## Source

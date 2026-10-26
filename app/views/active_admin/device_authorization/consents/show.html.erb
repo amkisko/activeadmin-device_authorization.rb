@@ -1,3 +1,14 @@
-<main>
-  <%= render partial: "active_admin/device_authorization/consent", locals: {grant: @grant, heading_level: :h1} %>
-</main>
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= t("active_admin.device_authorization.title") %></title>
+  <%= render partial: "active_admin/device_authorization/standalone_styles" %>
+</head>
+<body>
+  <main class="device-auth-standalone">
+    <%= render partial: "active_admin/device_authorization/consent", locals: {grant: @grant, heading_level: :h1} %>
+  </main>
+</body>
+</html>

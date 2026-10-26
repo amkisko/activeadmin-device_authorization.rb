@@ -1,4 +1,19 @@
-<main>
-  <h1><%= t("active_admin.device_authorization.enter_code") %></h1>
-  <%= render partial: "active_admin/device_authorization/enter_code" %>
-</main>
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= t("active_admin.device_authorization.enter_code") %></title>
+  <%= render partial: "active_admin/device_authorization/standalone_styles" %>
+</head>
+<body>
+  <main class="device-auth-standalone">
+    <h1><%= t("active_admin.device_authorization.enter_code") %></h1>
+    <div class="panel">
+      <div class="panel-body">
+        <%= render partial: "active_admin/device_authorization/enter_code" %>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

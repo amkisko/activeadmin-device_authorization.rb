@@ -1,0 +1,147 @@
+<style>
+  .device-auth-standalone {
+    box-sizing: border-box;
+    color: #1a1a1a;
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.5;
+    margin: 0 auto;
+    max-width: 40rem;
+    padding: 1.5rem 1rem 3rem;
+  }
+  .device-auth-standalone *,
+  .device-auth-standalone *::before,
+  .device-auth-standalone *::after {
+    box-sizing: border-box;
+  }
+  .device-auth-standalone h1,
+  .device-auth-standalone .panel-title {
+    color: #111;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 1rem;
+  }
+  .device-auth-standalone .panel {
+    background: #fff;
+    border: 1px solid #c8c8c8;
+    margin: 0 0 1.25rem;
+    padding: 1rem 1.1rem;
+  }
+  .device-auth-standalone .panel-body > *:first-child {
+    margin-top: 0;
+  }
+  .device-auth-standalone .panel-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .device-auth-standalone .attributes_table {
+    border-collapse: collapse;
+    margin: 0 0 1rem;
+    width: 100%;
+  }
+  .device-auth-standalone .attributes_table th,
+  .device-auth-standalone .attributes_table td {
+    border-bottom: 1px solid #ddd;
+    padding: 0.55rem 0.35rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .device-auth-standalone .attributes_table th {
+    color: #444;
+    font-weight: 600;
+    width: 8.5rem;
+  }
+  .device-auth-standalone .device-auth-user-code {
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+  }
+  .device-auth-standalone .flash {
+    border: 1px solid #8a2f1d;
+    border-radius: 2px;
+    margin: 0 0 1rem;
+    padding: 0.75rem 0.9rem;
+  }
+  .device-auth-standalone .flash_alert {
+    background: #f8e8e4;
+    color: #5c1f14;
+  }
+  .device-auth-standalone .inline-hints {
+    color: #555;
+    margin: 0 0 1rem;
+  }
+  .device-auth-standalone fieldset {
+    border: 0;
+    margin: 0 0 1rem;
+    min-width: 0;
+    padding: 0;
+  }
+  .device-auth-standalone legend,
+  .device-auth-standalone .label {
+    color: #222;
+    display: block;
+    font-weight: 600;
+    margin: 0 0 0.4rem;
+  }
+  .device-auth-standalone .choice {
+    list-style: none;
+    margin: 0 0 0.45rem;
+  }
+  .device-auth-standalone .choice label {
+    display: inline-flex;
+    gap: 0.45rem;
+    align-items: flex-start;
+  }
+  .device-auth-standalone input[type="text"],
+  .device-auth-standalone select {
+    border: 1px solid #888;
+    border-radius: 2px;
+    display: block;
+    font: inherit;
+    max-width: 100%;
+    padding: 0.5rem 0.6rem;
+    width: 100%;
+  }
+  .device-auth-standalone input[type="text"]:focus,
+  .device-auth-standalone select:focus,
+  .device-auth-standalone input[type="checkbox"]:focus,
+  .device-auth-standalone input[type="submit"]:focus {
+    outline: 3px solid #1d4f91;
+    outline-offset: 2px;
+  }
+  .device-auth-standalone .device-auth-actions ol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .device-auth-standalone .device-auth-actions input[type="submit"],
+  .device-auth-standalone fieldset.actions input[type="submit"] {
+    background: #1d4f91;
+    border: 1px solid #163d70;
+    border-radius: 2px;
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    min-height: 2.5rem;
+    padding: 0.45rem 1rem;
+    width: 100%;
+  }
+  .device-auth-standalone .device-auth-actions li:last-child input[type="submit"] {
+    background: #fff;
+    border-color: #888;
+    color: #222;
+  }
+  @media (min-width: 40rem) {
+    .device-auth-standalone .device-auth-actions ol {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .device-auth-standalone .device-auth-actions input[type="submit"],
+    .device-auth-standalone fieldset.actions input[type="submit"] {
+      width: auto;
+    }
+  }
+</style>

@@ -4,8 +4,6 @@
 
 RFC 8628-style device authorization for ActiveAdmin: public device/token endpoints, signed-in consent in the admin UI, and short-lived bearer access tokens.
 
-This gem is unpublished (`allowed_push_host` empty) while the repository is private. Host apps can link it with a git source once they have access.
-
 ## Requirements
 
 - Ruby 3.2+
@@ -14,10 +12,21 @@ This gem is unpublished (`allowed_push_host` empty) while the repository is priv
 
 ## Install
 
+From RubyGems after a release:
+
+```ruby
+# Gemfile
+gem "activeadmin-device_authorization"
+```
+
+From git:
+
 ```ruby
 # Gemfile
 gem "activeadmin-device_authorization", github: "amkisko/activeadmin-device_authorization.rb"
 ```
+
+Maintainers publish with `make release` (`usr/bin/release.rb`), which builds, pushes to RubyGems, tags the version, and creates a GitHub release.
 
 ## Why these settings are configurable
 
@@ -84,15 +93,21 @@ end
 
 OAuth controller paths are absolute (`/active_admin/device_authorization/...`) so nesting under `namespace :admin` does not invent `Admin::ActiveAdmin::...` constants. Consent defaults to the ActiveAdmin page (`device_auth#...`).
 
-Set `verification_base_url` to the host's trusted HTTPS origin in production. When it is unset, verification links use `request.base_url`, so the host must enforce HTTPS and reject untrusted `Host` headers.
-
 `access_token_absolute_ttl` is the hard ceiling. Consent `min` / `max` / `default` / `choices` must sit inside that ceiling; `clamp_absolute_ttl` uses `min(access_token_max_absolute_ttl, access_token_absolute_ttl)`.
-
-Token retention deletes rows past `token_retention_period` after absolute expiry, revoke, or idle expiry (when idle TTL is enabled). Do not rely on absolute expiry alone when absolute TTL is nil (far-future sentinel). Schedule `bundle exec rake active_admin:device_authorization:retention` in the host application at the cadence required by its retention policy.
 
 Consent and token callbacks run after their database commit. A callback exception is reported through `Rails.error` and does not hide the committed decision or issued token from the caller. Use a durable host-side job or outbox when delivery must be retried.
 
 RFC 8628 `slow_down` raises the required poll interval by `slow_down_increment` when the grant stores `poll_interval_seconds`. Without that column, the server still returns `slow_down` against the base `poll_interval` only.
+
+### Host responsibilities
+
+The gem does not replace host security controls. Before production traffic:
+
+- Wire both `rate_limit_device_authorization` and `rate_limit_token`. Route mounting fails unless both are callable. Each request continues only when its limiter returns exactly `true`. Load-test the policies you choose.
+- Set `verification_base_url` to the host's trusted HTTPS origin in production. When it is unset, verification links use `request.base_url`, so the host must enforce HTTPS and reject untrusted `Host` headers.
+- Schedule `bundle exec rake active_admin:device_authorization:retention` at the cadence required by the host retention policy. Token retention deletes rows past `token_retention_period` after absolute expiry, revoke, or idle expiry (when idle TTL is enabled). Do not rely on absolute expiry alone when absolute TTL is nil (far-future sentinel).
+- Implement host models and indexes that match the contract below, including uniqueness and foreign keys.
+- Authenticate bearer tokens in the host API (see Bearer validation contract). The gem issues and expires tokens; it does not install API authentication middleware.
 
 ### Host model contract
 
@@ -133,6 +148,10 @@ make test
 Matrixed Rails versions use [Appraisal](https://github.com/thoughtbot/appraisal): `gemfiles/rails72.gemfile`, `rails8ruby34.gemfile`, and `rails8ruby4.gemfile`. Run `bundle exec appraisal rspec` to execute RSpec in each gemfile context.
 
 [Trunk](https://docs.trunk.io) config lives in `.trunk/`; CI can run `trunk` via `.github/workflows/_trunk_check.yml`. Releases: `make release` or `usr/bin/release.rb`.
+
+## Security
+
+Report vulnerabilities to security@kiskolabs.com. See [SECURITY.md](SECURITY.md).
 
 ## Contributing
 

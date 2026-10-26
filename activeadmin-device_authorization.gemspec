@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
     "changelog_uri" => "#{repository_url}/blob/main/CHANGELOG.md",
     "bug_tracker_uri" => "#{repository_url}/issues",
     "documentation_uri" => "#{repository_url}#readme",
-    "allowed_push_host" => "",
+    "allowed_push_host" => "https://rubygems.org",
     "rubygems_mfa_required" => "true"
   }
 
