@@ -1,0 +1,28 @@
+sv:
+  active_admin:
+    device_authorization:
+      menu: Enhetsauktorisering
+      title: Auktorisera enhet
+      enter_code: Ange användarkoden
+      enter_code_hint: Ange koden som klienten visar och granska den begärda åtkomsten.
+      continue: Fortsätt
+      intro: En klient begärde en kortlivad admin-åtkomsttoken. Kontrollera klient, behörigheter och livstid innan du godkänner.
+      client: Klient
+      user_code: Användarkod
+      status: Status
+      idle_note: Token går också ut efter %{idle_hours} h utan användning, och senast efter den absoluta livstid du väljer när absolut utgång är aktiverad.
+      scopes: Behörigheter
+      scopes_hint: Avmarkera behörigheter som den här sessionen inte ska få.
+      absolute_ttl: Absolut livstid
+      approve: Godkänn
+      deny: Neka
+      approved: Begäran godkänd. Gå tillbaka till klienten; den tar emot token snart.
+      denied: Begäran nekad.
+      not_actionable: Denna begäran är %{status} och kan inte ändras här.
+      error:
+        not_pending: Begäran väntar inte längre.
+        expired: Begäran har gått ut.
+        invalid_scope: Välj minst en giltig behörighet.
+        unsupported_scope: En eller flera behörigheter tillåts inte för denna klient.
+        scope_not_requested: En vald behörighet fanns inte i klientens begäran.
+        resource_owner_inactive: Ditt konto kan inte godkänna tokens.

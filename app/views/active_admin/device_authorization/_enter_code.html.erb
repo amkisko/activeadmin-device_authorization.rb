@@ -1,0 +1,12 @@
+<p class="inline-hints"><%= t("active_admin.device_authorization.enter_code_hint") %></p>
+<%= form_with url: send(:"#{ActiveAdmin::DeviceAuthorization.config.path_namespace}_device_auth_path"), method: :get, local: true, class: "formtastic" do %>
+  <fieldset class="inputs">
+    <div class="input string required">
+      <label class="label" for="user_code"><%= t("active_admin.device_authorization.user_code") %></label>
+      <%= text_field_tag :user_code, params[:user_code], id: "user_code", required: true, autocomplete: "off", autofocus: true %>
+    </div>
+  </fieldset>
+  <fieldset class="actions">
+    <%= submit_tag t("active_admin.device_authorization.continue") %>
+  </fieldset>
+<% end %>

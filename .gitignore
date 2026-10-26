@@ -1,0 +1,49 @@
+# Dependencies
+/.bundle/
+/vendor/bundle
+/gemfiles/vendor/bundle
+
+# Documentation
+/.yardoc/
+/doc/
+/rdoc/
+
+# Environment
+/.env
+/.env.local
+
+# Testing
+/coverage/
+/.rspec_status
+/spec/examples.txt
+.rspec_failures
+
+# Gem test app (see spec/dummy)
+/spec/dummy/log/
+/spec/dummy/storage/
+/spec/dummy/tmp/
+/spec/dummy/db/*.sqlite3
+
+# IDE
+/.vscode/
+/.idea/
+*.swp
+*.swo
+*~
+.cursor/mcp.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+*.tmp
+/tmp/
+/log/*
+
+# Build artifacts
+*.gem
+/pkg/
+
+.pray

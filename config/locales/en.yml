@@ -1,0 +1,28 @@
+en:
+  active_admin:
+    device_authorization:
+      menu: Device authorization
+      title: Authorize device
+      enter_code: Enter the user code
+      enter_code_hint: Enter the code shown by the client to review its requested access.
+      continue: Continue
+      intro: A client asked for a short-lived admin access token. Review the client, scopes, and lifetime before approving.
+      client: Client
+      user_code: User code
+      status: Status
+      idle_note: The token also expires after %{idle_hours}h without use, and no later than the absolute lifetime you choose when absolute expiry is enabled.
+      scopes: Scopes
+      scopes_hint: Uncheck any scope this session should not receive.
+      absolute_ttl: Absolute lifetime
+      approve: Approve
+      deny: Deny
+      approved: Request approved. Return to the client; it will receive the token shortly.
+      denied: Request denied.
+      not_actionable: This request is %{status} and cannot be changed here.
+      error:
+        not_pending: This request is no longer pending.
+        expired: This request expired.
+        invalid_scope: Choose at least one valid scope.
+        unsupported_scope: One or more scopes are not allowed for this client.
+        scope_not_requested: A selected scope was not requested by the client.
+        resource_owner_inactive: Your account cannot approve tokens.

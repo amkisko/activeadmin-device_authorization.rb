@@ -1,0 +1,28 @@
+fi:
+  active_admin:
+    device_authorization:
+      menu: Laitteistovaltuutus
+      title: Valtuuta laite
+      enter_code: Syötä käyttäjäkoodi
+      enter_code_hint: Syötä asiakkaan näyttämä koodi ja tarkista sen pyytämät oikeudet.
+      continue: Jatka
+      intro: Asiakas pyysi lyhytikäistä admin-tunnusta. Tarkista asiakas, oikeudet ja voimassaolo ennen hyväksyntää.
+      client: Asiakas
+      user_code: Käyttäjäkoodi
+      status: Tila
+      idle_note: Tunnus vanhenee myös %{idle_hours} h käyttämättömyyden jälkeen ja viimeistään valitsemasi absoluuttisen ajan kuluttua, jos absoluuttinen vanheneminen on käytössä.
+      scopes: Oikeudet
+      scopes_hint: Poista valinta oikeuksista, joita tämä istunto ei saa.
+      absolute_ttl: Absoluuttinen voimassaolo
+      approve: Hyväksy
+      deny: Hylkää
+      approved: Pyyntö hyväksytty. Palaa asiakkaaseen; se vastaanottaa tunnuksen pian.
+      denied: Pyyntö hylätty.
+      not_actionable: Tämä pyyntö on tilassa %{status} eikä sitä voi muuttaa täällä.
+      error:
+        not_pending: Pyyntö ei ole enää odottava.
+        expired: Pyyntö vanhentui.
+        invalid_scope: Valitse vähintään yksi kelvollinen oikeus.
+        unsupported_scope: Yksi tai useampi oikeus ei ole sallittu tälle asiakkaalle.
+        scope_not_requested: Valittu oikeus ei ollut asiakkaan pyynnössä.
+        resource_owner_inactive: Tilisi ei voi hyväksyä tunnuksia.
