@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "Configurable device authorization grant, ActiveAdmin consent UI, and short-lived bearer tokens for admin APIs."
   spec.license = "MIT"
   spec.platform = Gem::Platform::RUBY
-  spec.required_ruby_version = ">= 3.2.0"
+  spec.required_ruby_version = ">= 3.4.0"
 
   repository_url = "https://github.com/amkisko/activeadmin-device_authorization.rb"
 

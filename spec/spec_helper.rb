@@ -1,5 +1,20 @@
 # frozen_string_literal: true
 
+polyrun_cov_measure =
+  ENV["POLYRUN_COVERAGE_DISABLE"] != "1" &&
+  %w[1 true yes].include?(ENV["POLYRUN_COVERAGE"]&.to_s&.downcase)
+
+if polyrun_cov_measure
+  require "coverage"
+  branch = %w[1 true yes].include?(ENV["POLYRUN_COVERAGE_BRANCHES"]&.to_s&.downcase)
+  ::Coverage.start(lines: true, branches: branch)
+end
+
+if polyrun_cov_measure
+  require "polyrun/coverage/rails"
+  Polyrun::Coverage::Rails.start!(root: File.expand_path("..", __dir__))
+end
+
 require "active_admin/device_authorization"
 
 unless defined?(Rails)
@@ -31,3 +46,16 @@ RSpec.configure do |config|
 
   config.before { ActiveAdmin::DeviceAuthorization.reset_config! }
 end
+
+require "polyrun/rspec"
+Polyrun::RSpec.install_sharded_formatter_compat!
+Polyrun::RSpec.install_failure_fragments!
+Polyrun::RSpec.install_worker_ping!
+Polyrun::RSpec.install_example_debug!
+Polyrun::RSpec.install_example_rails_logging!
+Polyrun::RSpec.install_example_timeout!
+Polyrun::RSpec.install_example_prosopite!
+if %w[1 true yes].include?(ENV["POLYRUN_SPEC_QUALITY"]&.to_s&.downcase)
+  Polyrun::RSpec.install_spec_quality!
+end
+require_relative "support/junit_formatter"

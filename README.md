@@ -6,7 +6,7 @@ RFC 8628-style device authorization for ActiveAdmin: public device/token endpoin
 
 ## Requirements
 
-- Ruby 3.2+
+- Ruby 3.4+
 - Rails 7.2.3.2+
 - ActiveAdmin 3.2+
 

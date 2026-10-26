@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Require Ruby 3.4 or newer (Rails 7.2 pulls `rdoc` 8 / `rbs` 4, which need Ruby 3.3+)
+- Wire Polyrun coverage collection and CI coverage reporting so `coverage/merged.json` is produced
+
 ## 0.1.3 (2026-10-26)
 
 - Add RFC 8628 device authorization with ActiveAdmin consent, token exchange, and retention helpers
