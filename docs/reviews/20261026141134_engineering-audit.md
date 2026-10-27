@@ -1,5 +1,9 @@
 # Engineering audit
 
+## Participants
+
+Andrei Makarov (@amkisko)
+
 ## Decisions
 
 The review covered every executable Ruby, ERB, Rake, shell, CI, and release path in the repository. It followed request data from the public device and token endpoints through host-owned models, consent, token issue, retention, logs, callbacks, packaging, and CI.

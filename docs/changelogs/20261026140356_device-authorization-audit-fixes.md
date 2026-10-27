@@ -1,5 +1,9 @@
 # Device authorization audit fixes
 
+## Participants
+
+Andrei Makarov (@amkisko)
+
 ## Decisions
 
 - Require both public OAuth endpoints to have a callable host rate limiter before routes are mounted. A limiter must return exactly true to continue.
