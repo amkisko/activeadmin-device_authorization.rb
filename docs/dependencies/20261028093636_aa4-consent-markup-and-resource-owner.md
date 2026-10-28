@@ -29,7 +29,7 @@ Host workaround until upgrade: override `_consent.html.erb`, add those PagePolic
 
 ## Next
 
-Release gem beyond 0.1.3; drop host view overrides after upgrade; loosen the beta pin when ActiveAdmin 4.0.0 stable ships.
+Publish 0.2.0; drop host view overrides after upgrade; loosen the beta pin when ActiveAdmin 4.0.0 stable ships.
 
 ## Source
 

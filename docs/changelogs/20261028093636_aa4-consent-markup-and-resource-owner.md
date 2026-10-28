@@ -21,7 +21,7 @@ Andrei Makarov (@amkisko)
 
 ## Next
 
-- Cut a release after 0.1.3 once this branch merges.
+- Publish 0.2.0 with `make release`.
 - Hosts can remove local consent view overrides after upgrading.
 - Revisit the ActiveAdmin pin when 4.0.0 stable is published.
 

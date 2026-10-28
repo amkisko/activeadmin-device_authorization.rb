@@ -1,10 +1,11 @@
 # CHANGELOG
 
-## Unreleased
+## 0.2.0 (2026-10-28)
 
-- Require ActiveAdmin 4 (`>= 4.0.0.beta19`); drop ActiveAdmin 3 support
+- BREAKING: Require ActiveAdmin 4 (`>= 4.0.0.beta19`); drop ActiveAdmin 3 support
 - Ship ActiveAdmin 4 consent markup: `.attributes-table`, self-contained verify prompt, Approve/Deny submits inside `.formtastic`
-- Resolve `current_resource_owner` with `instance_exec` for zero-arity procs so private Devise helpers work; document ActionPolicy `approve?` / `deny?` / `step_up?` page policy hooks
+- Resolve `current_resource_owner` with `instance_exec` for zero-arity procs so private Devise helpers work
+- Document ActionPolicy `approve?` / `deny?` / `step_up?` page policy hooks
 
 ## 0.1.3 (2026-10-26)
 
