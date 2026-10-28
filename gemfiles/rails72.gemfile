@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
+gem "activeadmin", "4.0.0.beta23"
 gem "rails", "~> 7.2", ">= 7.2.3.2"
-gem "activeadmin", "~> 3.2.0"
 
 gemspec path: "../"

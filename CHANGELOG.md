@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Fix ActiveAdmin 4 consent markup: attributes table dual classes, self-contained verify prompt, Approve/Deny submits inside `.formtastic`
+- Require ActiveAdmin 4 (`>= 4.0.0.beta19`); drop ActiveAdmin 3 support
+- Ship ActiveAdmin 4 consent markup: `.attributes-table`, self-contained verify prompt, Approve/Deny submits inside `.formtastic`
 - Resolve `current_resource_owner` with `instance_exec` for zero-arity procs so private Devise helpers work; document ActionPolicy `approve?` / `deny?` / `step_up?` page policy hooks
 
 ## 0.1.3 (2026-10-26)

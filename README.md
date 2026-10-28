@@ -8,7 +8,7 @@ RFC 8628-style device authorization for ActiveAdmin: public device/token endpoin
 
 - Ruby 3.4+
 - Rails 7.2.3.2+
-- ActiveAdmin 3.2+ (consent markup also targets ActiveAdmin 4 Tailwind class names)
+- ActiveAdmin 4.0.0.beta19+ (Tailwind theme; ActiveAdmin 3 is unsupported)
 
 ## Install
 
@@ -171,7 +171,7 @@ make lint
 make test
 ```
 
-Matrixed Rails versions use [Appraisal](https://github.com/thoughtbot/appraisal): `gemfiles/rails72.gemfile`, `rails8ruby34.gemfile`, and `rails8ruby4.gemfile`. Run `bundle exec appraisal rspec` to execute RSpec in each gemfile context.
+Matrixed Rails versions use [Appraisal](https://github.com/thoughtbot/appraisal): `gemfiles/rails72.gemfile`, `rails8ruby34.gemfile`, and `rails8ruby4.gemfile`, each pinned to ActiveAdmin 4.0.0.beta23. Run `bundle exec appraisal rspec` to execute RSpec in each gemfile context.
 
 [Trunk](https://docs.trunk.io) config lives in `.trunk/`; CI can run `trunk` via `.github/workflows/_trunk_check.yml`. Releases: `make release` or `usr/bin/release.rb`.
 

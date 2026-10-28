@@ -43,7 +43,7 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activeadmin", ">= 3.2"
+  spec.add_dependency "activeadmin", ">= 4.0.0.beta19", "< 5"
   spec.add_dependency "rails", ">= 7.2.3.2"
 
   spec.add_development_dependency "appraisal", "~> 2"
