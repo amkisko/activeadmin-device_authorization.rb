@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fix ActiveAdmin 4 consent markup: attributes table dual classes, self-contained verify prompt, Approve/Deny submits inside `.formtastic`
+- Resolve `current_resource_owner` with `instance_exec` for zero-arity procs so private Devise helpers work; document ActionPolicy `approve?` / `deny?` / `step_up?` page policy hooks
+
 ## 0.1.3 (2026-10-26)
 
 - Add RFC 8628 device authorization with ActiveAdmin consent, token exchange, and retention helpers

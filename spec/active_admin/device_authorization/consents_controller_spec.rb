@@ -85,6 +85,16 @@ RSpec.describe ActiveAdmin::DeviceAuthorization::ConsentsController do
     expect(response.body).to include("Approve")
   end
 
+  it "uses ActiveAdmin 4-compatible consent wrappers and keeps submits inside formtastic" do
+    response = get("/admin/device_auth/ABCD-2345")
+
+    expect(response.status).to eq(200)
+    expect(response.body).to include('class="attributes-table attributes_table"')
+    expect(response.body).to include('class="device-auth-verify flash flash_alert"')
+    expect(response.body).to match(%r{class="formtastic"[^>]*>[\s\S]*?type="submit"[\s\S]*?Approve}i)
+    expect(response.body).to match(%r{class="formtastic"[^>]*>[\s\S]*?type="submit"[\s\S]*?Deny}i)
+  end
+
   it "rejects a consent decision without an authenticity token" do
     expect {
       request(:post, "/admin/device_auth/ABCD-2345/approve")

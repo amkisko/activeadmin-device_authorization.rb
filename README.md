@@ -8,7 +8,7 @@ RFC 8628-style device authorization for ActiveAdmin: public device/token endpoin
 
 - Ruby 3.4+
 - Rails 7.2.3.2+
-- ActiveAdmin 3.2+
+- ActiveAdmin 3.2+ (consent markup also targets ActiveAdmin 4 Tailwind class names)
 
 ## Install
 
@@ -52,7 +52,11 @@ ActiveAdmin::DeviceAuthorization.configure do |config|
   config.client_class_name = "DeviceAuthorizationClient"
   config.grant_class_name = "DeviceAuthorizationGrant"
   config.access_token_class_name = "DeviceAuthorizationAccessToken"
-  config.current_resource_owner = ->(controller) { controller.current_admin_user }
+  # Prefer zero-arity: the gem runs this with instance_exec on the controller.
+  # Devise helpers are often private; do not call them with an explicit receiver.
+  config.current_resource_owner = -> { current_admin_user }
+  # Arity-1 form still works; use send when the helper is private:
+  # config.current_resource_owner = ->(controller) { controller.send(:current_admin_user) }
 
   config.scopes = %w[api:read api:write]
   config.default_scopes = %w[api:read api:write]
@@ -108,6 +112,28 @@ The gem does not replace host security controls. Before production traffic:
 - Schedule `bundle exec rake active_admin:device_authorization:retention` at the cadence required by the host retention policy. Token retention deletes rows past `token_retention_period` after absolute expiry, revoke, or idle expiry (when idle TTL is enabled). Do not rely on absolute expiry alone when absolute TTL is nil (far-future sentinel).
 - Implement host models and indexes that match the contract below, including uniqueness and foreign keys.
 - Authenticate bearer tokens in the host API (see Bearer validation contract). The gem issues and expires tokens; it does not install API authentication middleware.
+- When the host authorizes ActiveAdmin pages with ActionPolicy (or a similar adapter that maps actions to `action_name?` methods), define `approve?`, `deny?`, and `step_up?` on the page policy. Missing methods fail closed and Approve/Deny/step-up return unauthorized. `step_up?` is needed only when `on_approve_step_up` is configured.
+
+```ruby
+# Example ActionPolicy page policy hooks for Device Auth
+class ActiveAdmin::PagePolicy < ApplicationPolicy
+  def show?
+    true
+  end
+
+  def approve?
+    show?
+  end
+
+  def deny?
+    show?
+  end
+
+  def step_up?
+    show?
+  end
+end
+```
 
 ### Host model contract
 

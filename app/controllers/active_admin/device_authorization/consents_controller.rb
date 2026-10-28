@@ -66,7 +66,7 @@ module ActiveAdmin
       end
 
       def current_resource_owner
-        @current_resource_owner ||= ActiveAdmin::DeviceAuthorization.config.current_resource_owner.call(self)
+        @current_resource_owner ||= ActiveAdmin::DeviceAuthorization.config.resolve_current_resource_owner(self)
       end
 
       def load_grant!

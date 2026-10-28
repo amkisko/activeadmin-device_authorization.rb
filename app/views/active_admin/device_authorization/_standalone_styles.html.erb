@@ -34,11 +34,18 @@
   .device-auth-standalone .panel-body > *:last-child {
     margin-bottom: 0;
   }
+  .device-auth-standalone .attributes-table,
   .device-auth-standalone .attributes_table {
-    border-collapse: collapse;
     margin: 0 0 1rem;
     width: 100%;
   }
+  .device-auth-standalone .attributes-table table,
+  .device-auth-standalone table.attributes_table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .device-auth-standalone .attributes-table th,
+  .device-auth-standalone .attributes-table td,
   .device-auth-standalone .attributes_table th,
   .device-auth-standalone .attributes_table td {
     border-bottom: 1px solid #ddd;
@@ -46,6 +53,7 @@
     text-align: left;
     vertical-align: top;
   }
+  .device-auth-standalone .attributes-table th,
   .device-auth-standalone .attributes_table th {
     color: #444;
     font-weight: 600;
@@ -56,12 +64,14 @@
     font-size: 1.15rem;
     letter-spacing: 0.08em;
   }
+  .device-auth-standalone .device-auth-verify,
   .device-auth-standalone .flash {
     border: 1px solid #8a2f1d;
     border-radius: 2px;
     margin: 0 0 1rem;
     padding: 0.75rem 0.9rem;
   }
+  .device-auth-standalone .device-auth-verify,
   .device-auth-standalone .flash_alert {
     background: #f8e8e4;
     color: #5c1f14;
@@ -109,10 +119,12 @@
     outline: 3px solid #1d4f91;
     outline-offset: 2px;
   }
-  .device-auth-standalone .device-auth-actions ol {
+  .device-auth-standalone .device-auth-actions {
     display: flex;
     flex-direction: column;
     gap: 0.65rem;
+  }
+  .device-auth-standalone .device-auth-actions ol {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -129,15 +141,16 @@
     padding: 0.45rem 1rem;
     width: 100%;
   }
-  .device-auth-standalone .device-auth-actions li:last-child input[type="submit"] {
+  .device-auth-standalone .device-auth-actions .formtastic:last-child input[type="submit"] {
     background: #fff;
     border-color: #888;
     color: #222;
   }
   @media (min-width: 40rem) {
-    .device-auth-standalone .device-auth-actions ol {
+    .device-auth-standalone .device-auth-actions {
       flex-direction: row;
       flex-wrap: wrap;
+      align-items: flex-end;
     }
     .device-auth-standalone .device-auth-actions input[type="submit"],
     .device-auth-standalone fieldset.actions input[type="submit"] {

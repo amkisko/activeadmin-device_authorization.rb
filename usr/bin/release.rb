@@ -66,18 +66,20 @@ version_content = File.read(VERSION_FILE)
 version = version_content.match(/VERSION\s*=\s*"([0-9.]+)"/)[1]
 gem_file = "#{gem_name}-#{version}.gem"
 
+ReleaseVersionCheck.require_changelog_version!(version: version)
 ReleaseVersionCheck.warn_if_already_released(version: version, package_name: gem_name, registry: :rubygems)
 
 execute_command("gem build #{gemspec}")
 
 puts "Ready to release #{gem_file} #{version}"
 print "Continue? [Y/n] "
-answer = $stdin.gets.chomp
-unless ["Y", ""].include?(answer)
+answer = $stdin.gets.to_s.chomp
+unless answer.empty? || answer.casecmp?("y")
   puts "Exiting"
   exit 1
 end
 
 execute_command("gem push #{gem_file}")
-execute_command("git tag #{version} && git push --tags")
+execute_command("git tag #{version}")
+execute_command("git push origin HEAD \"refs/tags/#{version}\"")
 execute_command("gh release create #{version} --generate-notes")

@@ -49,7 +49,7 @@ module ActiveAdmin
 
               ActiveAdmin::DeviceAuthorization::Consent.new(
                 grant: @grant,
-                resource_owner: config.current_resource_owner.call(self),
+                resource_owner: config.resolve_current_resource_owner(self),
                 scopes: Array(params[:scopes]),
                 absolute_ttl_seconds: params[:absolute_ttl_seconds]
               ).approve!
@@ -67,7 +67,7 @@ module ActiveAdmin
               load_grant!
               ActiveAdmin::DeviceAuthorization::Consent.new(
                 grant: @grant,
-                resource_owner: config.current_resource_owner.call(self),
+                resource_owner: config.resolve_current_resource_owner(self),
                 scopes: @grant.requested_scopes,
                 absolute_ttl_seconds: config.access_token_default_absolute_ttl
               ).deny!

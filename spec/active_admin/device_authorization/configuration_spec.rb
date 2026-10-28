@@ -58,4 +58,39 @@ RSpec.describe ActiveAdmin::DeviceAuthorization::Configuration do
       %w[api:read api:write]
     )
   end
+
+  describe "#resolve_current_resource_owner" do
+    let(:controller) do
+      Class.new do
+        private
+
+        def current_admin_user
+          :private_admin_user
+        end
+      end.new
+    end
+
+    it "runs a zero-arity proc with instance_exec so private helpers work" do
+      config.current_resource_owner = -> { current_admin_user }
+
+      expect(config.resolve_current_resource_owner(controller)).to eq(:private_admin_user)
+    end
+
+    it "still passes the controller to an arity-1 callable" do
+      config.current_resource_owner = ->(received) { received }
+
+      expect(config.resolve_current_resource_owner(controller)).to eq(controller)
+    end
+
+    it "returns nil when current_resource_owner is unset" do
+      config.current_resource_owner = nil
+
+      expect(config.resolve_current_resource_owner(controller)).to be_nil
+    end
+
+    it "defaults to a zero-arity proc that reads current_admin_user" do
+      expect(config.current_resource_owner.arity).to eq(0)
+      expect(config.resolve_current_resource_owner(controller)).to eq(:private_admin_user)
+    end
+  end
 end
