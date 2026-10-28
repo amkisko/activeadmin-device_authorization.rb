@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    activeadmin-device_authorization (0.1.3)
+    activeadmin-device_authorization (0.2.0)
       activeadmin (>= 4.0.0.beta19, < 5)
       rails (>= 7.2.3.2)
 
@@ -380,7 +380,7 @@ CHECKSUMS
   actiontext (8.1.4) sha256=33ee99bea7da6af911fc7d98b17013a8e1ec62aa01b20b20e9a5366f40dbf644
   actionview (8.1.4) sha256=eff1efd07c4d969abad288322b423bcb67fdbab5e324c91ca37352b80f226076
   activeadmin (4.0.0.beta23) sha256=bfa37e8dcb2288495260d1a13070f1d43d997096db53b085a2c21c4277f8deab
-  activeadmin-device_authorization (0.1.3)
+  activeadmin-device_authorization (0.2.0)
   activejob (8.1.4) sha256=4ed5b2ed8d4cc5c8f5f09becfef8346f202a4884eee0c8c73cae5ac378824099
   activemodel (8.1.4) sha256=9a0906c127bd118aa5f06157db12b8f750da83dccee72db2f658547a0ae7a0e8
   activerecord (8.1.4) sha256=3b4957ea7f246c9231bd7faa909312eac03a9101aaf87977b6c52733ff00b04f
