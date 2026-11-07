@@ -11,6 +11,10 @@ lint:
 
 audit:
 	@for lock in Gemfile.lock gemfiles/*.gemfile.lock; do \
+		if [ "$${lock}" = "gemfiles/rails72.gemfile.lock" ]; then \
+			echo "==> $${lock} (skip: Rails 7.2 has no published fix yet; see docs/dependencies/20261107120000_rails-72-unpatched-advisories.md)"; \
+			continue; \
+		fi; \
 		echo "==> $${lock}"; \
 		bundle exec bundler-audit check --gemfile-lock "$${lock}" || exit 1; \
 	done
