@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "cgi"
+
 module ActiveAdmin
   module DeviceAuthorization
     class DeviceAuthorizationRequest
@@ -48,7 +50,7 @@ module ActiveAdmin
           device_code: device_code,
           user_code: user_code,
           verification_uri: verification_uri,
-          verification_uri_complete: "#{verification_uri}/#{user_code}",
+          verification_uri_complete: "#{verification_uri}?user_code=#{CGI.escape(user_code)}",
           expires_in: @config.challenge_expires_in.to_i,
           interval: @config.poll_interval.to_i
         )

@@ -62,12 +62,11 @@ module ActiveAdmin
         @client_class_name = "DeviceAuthorizationClient"
         @grant_class_name = "DeviceAuthorizationGrant"
         @access_token_class_name = "DeviceAuthorizationAccessToken"
-        # Zero-arity: resolved with instance_exec so Devise helpers work without
-        # an explicit receiver (current_admin_user / current_user are often private).
+        # Zero-arity: resolved with instance_exec so private auth helpers work
+        # without an explicit receiver (current_admin_user / current_user).
         @current_resource_owner = -> { current_admin_user }
 
-        # RFC 8628 example uses 1800s; Doorkeeper device grant defaults to 300s.
-        # Ten minutes is a practical admin-consent window.
+        # RFC 8628 example uses 1800s; ten minutes is a practical admin-consent window.
         @challenge_expires_in = 10 * 60
         @poll_interval = 5
         @slow_down_increment = 5
@@ -150,7 +149,7 @@ module ActiveAdmin
 
       # Resolves the signed-in resource owner for consent actions.
       # Zero-arity callables run via instance_exec on the controller so private
-      # Devise helpers (current_admin_user, current_user) are reachable.
+      # auth helpers (current_admin_user, current_user) are reachable.
       # Arity-1 callables still receive the controller; use send(:current_user)
       # when calling with an explicit receiver.
       def resolve_current_resource_owner(controller)

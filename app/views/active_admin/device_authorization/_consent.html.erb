@@ -71,7 +71,8 @@
 
     <% if grant.pending? %>
       <div class="device-auth-actions">
-        <%= form_with url: send(:"#{config.path_namespace}_approve_device_auth_path", grant.user_code), method: :post, id: "device-auth-approve", data: {turbo: false}, class: "formtastic" do %>
+        <%= form_with url: url_for(action: :approve), method: :post, id: "device-auth-approve", data: {turbo: false}, class: "formtastic" do %>
+          <%= hidden_field_tag :user_code, grant.user_code %>
           <% if available_scopes.any? %>
             <fieldset class="inputs">
               <legend><%= t("active_admin.device_authorization.scopes") %></legend>
@@ -109,7 +110,8 @@
           </fieldset>
         <% end %>
 
-        <%= form_with url: send(:"#{config.path_namespace}_deny_device_auth_path", grant.user_code), method: :post, data: {turbo: false}, class: "formtastic" do %>
+        <%= form_with url: url_for(action: :deny), method: :post, data: {turbo: false}, class: "formtastic" do %>
+          <%= hidden_field_tag :user_code, grant.user_code %>
           <fieldset class="actions">
             <ol>
               <li class="action input_action">

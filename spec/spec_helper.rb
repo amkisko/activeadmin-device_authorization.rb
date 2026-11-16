@@ -44,7 +44,11 @@ RSpec.configure do |config|
   config.disable_monkey_patching!
   config.order = :random
 
-  config.before { ActiveAdmin::DeviceAuthorization.reset_config! }
+  config.before do |example|
+    next if %i[system request].include?(example.metadata[:type])
+
+    ActiveAdmin::DeviceAuthorization.reset_config!
+  end
 end
 
 require "polyrun/rspec"

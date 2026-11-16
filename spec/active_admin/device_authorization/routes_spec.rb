@@ -2,8 +2,6 @@
 
 require "spec_helper"
 require "action_controller"
-require_relative "../../../app/controllers/active_admin/device_authorization/application_controller"
-require_relative "../../../app/controllers/active_admin/device_authorization/consents_controller"
 
 RSpec.describe ActiveAdmin::DeviceAuthorization::Routes do
   before do
@@ -23,16 +21,19 @@ RSpec.describe ActiveAdmin::DeviceAuthorization::Routes do
   end
 
   class CaptureMapper
-    attr_reader :posts, :gets
+    attr_reader :posts, :gets, :namespaces
 
     def initialize
       @posts = []
       @gets = []
+      @namespaces = []
       @scope = []
     end
 
-    def namespace(name, path:, &block)
-      @scope.push([name, path])
+    def namespace(name, path: nil, **_opts, &block)
+      entry = {name: name, path: path}
+      @namespaces << entry
+      @scope.push(entry)
       yield self
     ensure
       @scope.pop
@@ -47,50 +48,39 @@ RSpec.describe ActiveAdmin::DeviceAuthorization::Routes do
     end
   end
 
-  it "draws absolute oauth controller paths and ActiveAdmin page consent routes by default" do
+  it "draws absolute oauth controller paths under the configured path namespace" do
     mapper = CaptureMapper.new
     described_class.draw(mapper)
 
-    oauth_targets = mapper.posts.select { |row| row[:scope].any? }.map { |row| row[:to] }
-    expect(oauth_targets).to eq([
+    expect(mapper.namespaces.map { |row| row[:name] }).to eq([:admin, :oauth])
+    expect(mapper.gets).to be_empty
+    expect(mapper.posts.map { |row| row[:to] }).to eq([
       "/active_admin/device_authorization/device_authorizations#create",
       "/active_admin/device_authorization/tokens#create"
     ])
-
-    consent_targets = (
-      mapper.gets.map { |row| row[:to] } +
-      mapper.posts.reject { |row| row[:scope].any? }.map { |row| row[:to] }
-    )
-    expect(consent_targets).to contain_exactly(
-      "device_auth#show",
-      "device_auth#approve",
-      "device_auth#deny"
-    )
+    expect(mapper.posts.map { |row| row[:action] }).to eq([:device_authorization, :token])
   end
 
-  it "draws absolute ConsentsController paths when consent: :controller" do
+  it "does not accept a consent mode keyword" do
     mapper = CaptureMapper.new
-    described_class.draw(mapper, consent: :controller)
-
-    targets = mapper.posts.map { |row| row[:to] } + mapper.gets.map { |row| row[:to] }
-    expect(targets).to include(
-      "/active_admin/device_authorization/consents#show",
-      "/active_admin/device_authorization/consents#approve",
-      "/active_admin/device_authorization/consents#deny"
-    )
+    expect {
+      described_class.draw(mapper, consent: :controller)
+    }.to raise_error(ArgumentError, /unknown keyword/i)
   end
 
-  it "recognizes the controller verification URI and generates its named path" do
+  it "recognizes OAuth paths when drawn at the routes root" do
     routes = ActionDispatch::Routing::RouteSet.new
     routes.draw do
-      namespace :admin do
-        ActiveAdmin::DeviceAuthorization::Routes.draw(self, consent: :controller)
-      end
+      ActiveAdmin::DeviceAuthorization::Routes.draw(self)
     end
 
-    expect(routes.recognize_path("/admin/device_auth", method: :get)).to include(
-      controller: "active_admin/device_authorization/consents", action: "index"
+    expect(routes.recognize_path("/admin/oauth/device_authorization", method: :post)).to include(
+      controller: "active_admin/device_authorization/device_authorizations",
+      action: "create"
     )
-    expect(routes.url_helpers.admin_device_auth_path).to eq("/admin/device_auth")
+    expect(routes.recognize_path("/admin/oauth/token", method: :post)).to include(
+      controller: "active_admin/device_authorization/tokens",
+      action: "create"
+    )
   end
 end

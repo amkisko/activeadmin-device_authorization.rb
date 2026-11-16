@@ -43,6 +43,10 @@ Thumbs.db
 /tmp/
 /log/*
 
+# Playwright / npm (system e2e)
+/node_modules/
+/package-lock.json
+
 # Build artifacts
 *.gem
 /pkg/

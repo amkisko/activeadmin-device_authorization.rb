@@ -18,9 +18,7 @@ RSpec.describe "OAuth requests" do
   let(:routes) do
     ActionDispatch::Routing::RouteSet.new.tap do |route_set|
       route_set.draw do
-        namespace :admin do
-          ActiveAdmin::DeviceAuthorization::Routes.draw(self)
-        end
+        ActiveAdmin::DeviceAuthorization::Routes.draw(self)
       end
     end
   end

@@ -30,7 +30,7 @@ Maintainers publish with `make release` (`usr/bin/release.rb`), which builds, pu
 
 ## Why these settings are configurable
 
-- `challenge_expires_in` (default 600s): RFC 8628 requires `expires_in` for device/user codes. The RFC example is 1800s; Doorkeeper device grant defaults to 300s. Always required; device codes must expire.
+- `challenge_expires_in` (default 600s): RFC 8628 requires `expires_in` for device/user codes. The RFC example is 1800s; this gem defaults to 600s. Always required; device codes must expire.
 - `poll_interval` (default 5s): RFC 8628 `interval`; clients must use 5 when omitted.
 - `slow_down_increment` (default 5s): RFC 8628 `slow_down` requires increasing the interval by 5s. Keep 5 unless you have a documented reason.
 - `access_token_absolute_ttl` (default 4h): Absolute bearer cap (RFC 6819 short-lived access tokens). Set to `nil` to disable absolute expiry.
@@ -53,7 +53,7 @@ ActiveAdmin::DeviceAuthorization.configure do |config|
   config.grant_class_name = "DeviceAuthorizationGrant"
   config.access_token_class_name = "DeviceAuthorizationAccessToken"
   # Prefer zero-arity: the gem runs this with instance_exec on the controller.
-  # Devise helpers are often private; do not call them with an explicit receiver.
+  # Auth helpers are often private; do not call them with an explicit receiver.
   config.current_resource_owner = -> { current_admin_user }
   # Arity-1 form still works; use send when the helper is private:
   # config.current_resource_owner = ->(controller) { controller.send(:current_admin_user) }
@@ -87,15 +87,19 @@ end
 ```
 
 ```ruby
-# config/routes.rb (inside the admin namespace)
-namespace :admin do
-  ActiveAdmin::DeviceAuthorization::Routes.draw(self)
-  # Optional: Routes.draw(self, consent: :controller) serves the code-entry and
-  # consent pages from the gem instead of ActiveAdmin page actions.
-end
+# config/routes.rb (at the mapper root; draws /admin/oauth/... only)
+ActiveAdmin.routes(self)
+ActiveAdmin::DeviceAuthorization::Routes.draw(self)
 ```
 
-OAuth controller paths are absolute (`/active_admin/device_authorization/...`) so nesting under `namespace :admin` does not invent `Admin::ActiveAdmin::...` constants. Consent defaults to the ActiveAdmin page (`device_auth#...`).
+Consent UI is the ActiveAdmin "Device Auth" page (index plus `approve` / `deny` /
+`step_up` page_actions). It is drawn by `ActiveAdmin.routes` and authenticated
+through `ActiveAdmin::BaseController`. Do not nest `Routes.draw` under another
+`namespace :admin` (that double-prefixes the OAuth path). OAuth controller paths
+are absolute (`/active_admin/device_authorization/...`) so the admin namespace
+does not invent `Admin::ActiveAdmin::...` constants. OAuth endpoints stay public
+protocol surfaces (rate limits plus `client_id` / `device_code`); they do not use
+the admin session. See RFC-0002.
 
 `access_token_absolute_ttl` is the hard ceiling. Consent `min` / `max` / `default` / `choices` must sit inside that ceiling; `clamp_absolute_ttl` uses `min(access_token_max_absolute_ttl, access_token_absolute_ttl)`.
 
@@ -112,10 +116,10 @@ The gem does not replace host security controls. Before production traffic:
 - Schedule `bundle exec rake active_admin:device_authorization:retention` at the cadence required by the host retention policy. Token retention deletes rows past `token_retention_period` after absolute expiry, revoke, or idle expiry (when idle TTL is enabled). Do not rely on absolute expiry alone when absolute TTL is nil (far-future sentinel).
 - Implement host models and indexes that match the contract below, including uniqueness and foreign keys.
 - Authenticate bearer tokens in the host API (see Bearer validation contract). The gem issues and expires tokens; it does not install API authentication middleware.
-- When the host authorizes ActiveAdmin pages with ActionPolicy (or a similar adapter that maps actions to `action_name?` methods), define `approve?`, `deny?`, and `step_up?` on the page policy. Missing methods fail closed and Approve/Deny/step-up return unauthorized. `step_up?` is needed only when `on_approve_step_up` is configured.
+- When the host authorizes ActiveAdmin pages with an adapter that maps actions to `action_name?` methods, define `approve?`, `deny?`, and `step_up?` on the page policy. Missing methods fail closed and Approve/Deny/step-up return unauthorized. `step_up?` is needed only when `on_approve_step_up` is configured.
 
 ```ruby
-# Example ActionPolicy page policy hooks for Device Auth
+# Example page policy hooks for Device Auth
 class ActiveAdmin::PagePolicy < ApplicationPolicy
   def show?
     true
@@ -149,16 +153,15 @@ end
 
 The gem issues and expires tokens, but it does not install authentication in the host API. For every protected request, the host must digest the presented bearer value with `ActiveAdmin::DeviceAuthorization.config.digest`, find the matching token through the allowed client or resource-owner relation, reject it when `AccessTokenExpiry#expired?` is true, enforce its scopes, and update `last_used_at` only after successful authentication. A missing, revoked, expired, or out-of-scope token must fail closed.
 
-Register the ActiveAdmin page after configuration:
-
-```ruby
-ActiveAdmin::DeviceAuthorization::Page.register!
-```
+When `register_active_admin_page` is true (default), the engine registers the
+Device Auth page from `ActiveAdmin.after_load`. Set it to false and call
+`ActiveAdmin::DeviceAuthorization::Page.register!` yourself only when you need
+to own registration timing.
 
 ## Protocol
 
 1. `POST /admin/oauth/device_authorization` with `client_id` and `scope`
-2. Open `verification_uri` / `verification_uri_complete` while signed in as an admin user
+2. Open `verification_uri` / `verification_uri_complete` (`?user_code=...`) while signed in as an admin user
 3. Approve or deny (optional host `before_approve` / `on_approve_step_up` for step-up second factor before Approve; Deny is ungated)
 4. Poll `POST /admin/oauth/token` with `grant_type=urn:ietf:params:oauth:grant-type:device_code`
 
@@ -167,13 +170,17 @@ ActiveAdmin::DeviceAuthorization::Page.register!
 ```bash
 bundle install
 bundle exec appraisal install
+npm install && npx playwright install chromium
 make lint
 make test
 ```
 
 Matrixed Rails versions use [Appraisal](https://github.com/thoughtbot/appraisal): `gemfiles/rails72.gemfile`, `rails8ruby34.gemfile`, and `rails8ruby4.gemfile`, each pinned to ActiveAdmin 4.0.0.beta23. Run `bundle exec appraisal rspec` to execute RSpec in each gemfile context.
 
-[Trunk](https://docs.trunk.io) config lives in `.trunk/`; CI can run `trunk` via `.github/workflows/_trunk_check.yml`. Releases: `make release` or `usr/bin/release.rb`.
+Browser e2e uses Capybara + Playwright against `spec/dummy` (ActiveAdmin session,
+device authorization consent, and bearer-protected API). See `spec/README.md`.
+
+Trunk config lives in `.trunk/`; CI can run `trunk` via `.github/workflows/_trunk_check.yml`. Releases: `make release` or `usr/bin/release.rb`.
 
 ## Security
 

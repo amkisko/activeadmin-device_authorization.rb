@@ -1,11 +1,21 @@
 # CHANGELOG
 
+## 0.3.0 (2026-11-16)
+
+- BREAKING: Consent UI is only the ActiveAdmin Device Auth page (`ActiveAdmin.routes`); remove `consent: :controller` and ConsentsController
+- BREAKING: `Routes.draw` draws public OAuth endpoints only and applies `path_namespace` itself (one line at routes root; do not wrap in `namespace :admin`)
+- BREAKING: `verification_uri_complete` uses a `user_code` query parameter instead of a path suffix
+- Register the Device Auth page from `ActiveAdmin.after_load` when `register_active_admin_page` is true
+- Allow manual `Page.register!` when `register_active_admin_page` is false (engine auto-register stays gated)
+- Show the enter-code title on Device Auth when no grant is loaded
+- Document the ActiveAdmin consent vs explicit OAuth split as RFC-0002
+
 ## 0.2.0 (2026-10-28)
 
 - BREAKING: Require ActiveAdmin 4 (`>= 4.0.0.beta19`); drop ActiveAdmin 3 support
 - Ship ActiveAdmin 4 consent markup: `.attributes-table`, self-contained verify prompt, Approve/Deny submits inside `.formtastic`
-- Resolve `current_resource_owner` with `instance_exec` for zero-arity procs so private Devise helpers work
-- Document ActionPolicy `approve?` / `deny?` / `step_up?` page policy hooks
+- Resolve `current_resource_owner` with `instance_exec` for zero-arity procs so private authentication helpers work
+- Document page policy hooks `approve?` / `deny?` / `step_up?`
 
 ## 0.1.3 (2026-10-26)
 
