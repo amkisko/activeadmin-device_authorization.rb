@@ -5,9 +5,9 @@ require "rails_helper"
 RSpec.describe "Device authorization to GraphQL bearer", type: :request do
   let!(:admin) { create_admin_user! }
   let!(:client) { create_device_client! }
-  let!(:post_record) { Post.create!(title: "Hello", body: "World") }
 
   it "issues a bearer token after consent and authorizes ActiveAdmin GraphQL" do
+    post_record = Post.create!(title: "Hello", body: "World")
     challenge = request_device_challenge!(client_id: client.client_id)
     grant = DeviceAuthorizationGrant.find_by!(user_code: challenge.fetch("user_code"))
     ActiveAdmin::DeviceAuthorization::Consent.new(
@@ -36,7 +36,7 @@ RSpec.describe "Device authorization to GraphQL bearer", type: :request do
     body = JSON.parse(response.body)
     expect(body["errors"]).to be_nil
     titles = body.dig("data", "posts", "nodes")&.map { |row| row["title"] }
-    expect(titles).to include("Hello")
+    expect(titles).to include(post_record.title)
   end
 
   it "rejects GraphQL without a bearer or session" do

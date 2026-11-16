@@ -34,7 +34,7 @@ RSpec.describe ActiveAdmin::DeviceAuthorization::Page do
       ActiveAdmin.define_singleton_method(:register_page) do |*args, **kwargs, &block|
         original.call(*args, **kwargs, &block)
       end
-    elsif ActiveAdmin.singleton_class.instance_methods(false).include?(:register_page)
+    elsif ActiveAdmin.singleton_class.method_defined?(:register_page, false)
       ActiveAdmin.singleton_class.remove_method(:register_page)
     end
   end

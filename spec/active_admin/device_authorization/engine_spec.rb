@@ -65,7 +65,7 @@ RSpec.describe ActiveAdmin::DeviceAuthorization::Engine do
       ActiveAdmin.define_singleton_method(name) do |*args, **kwargs, &block|
         original.call(*args, **kwargs, &block)
       end
-    elsif ActiveAdmin.singleton_class.instance_methods(false).include?(name)
+    elsif ActiveAdmin.singleton_class.method_defined?(name, false)
       ActiveAdmin.singleton_class.remove_method(name)
     end
   end
