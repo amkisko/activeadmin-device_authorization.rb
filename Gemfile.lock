@@ -244,7 +244,7 @@ GEM
       base64
       concurrent-ruby (>= 1.1.6)
       mime-types (>= 3.0)
-    polyrun (2.2.9)
+    polyrun (3.0.1)
     pp (0.6.4)
       prettyprint
     prettyprint (0.2.1)
@@ -548,7 +548,7 @@ CHECKSUMS
   parallel (2.3.0) sha256=f75a3e904101ce6a1ccb6b8dc800cbafd42166d83330192438dcf29395167a6f
   parser (3.3.12.0) sha256=21a6d7f755d5a24dfbdc6e6b772e4e879a52e7631a88bc5a3a134606052c9828
   playwright-ruby-client (1.64.0) sha256=a30df6435a26a09dccb664260e1aaed49de2c2d97a67c7ee7b03ab84755af755
-  polyrun (2.2.9) sha256=0ea6ea3590f3756e30fc5adb2358129ba4142cb1b86ebd7da975873444970ec3
+  polyrun (3.0.1) sha256=9827cfe16a1b14c6c5eb542043df10f84b6f7ac6e8224426ba389df974fff3ee
   pp (0.6.4) sha256=dfcb0fce700c41456265922884f9fe195d7fbb0674a3578e6c0f69588e82b570
   prettyprint (0.2.1) sha256=d555d57ea6d7cf001d4774b693546a6bd88bec1e778ddffb5c60b68ceec4b7d4
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
